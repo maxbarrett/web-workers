@@ -1,3 +1,8 @@
-# web-workers
+# Web workers demo
 
-A playground for experimenting with basic and shared web workers.
+Simple demo showing how expensive UI blocking operations can be avoided by using web workers.
+
+Browser needs HTTP server running to access web worker file:
+```sh
+python -m SimpleHTTPServer
+```

@@ -1,78 +1,49 @@
 <html>
 <head>
 	<style>
+		body { font-family:sans-serif; font-size:14px; }
+		button { display:block; margin-bottom:10px; }
+		textarea { margin-top:20px; width:300px; height:50px; }
 	</style>
 
 </head>
 
 <body>
 
-	<button id="alert">Can I alert?</button>
-	<br><br>
+	<h1>Web worker demo</h1>
+
+	<p>Both buttons invoke identical functions creating 1000mb array.</p>
+
+	<button id="expensive">Expensive operation (blocking)</button>
+	<p>Array size: <span id="output1"></span></p>
 
 
-	<!-- for 2): create custom script tag -->
-	<script type="mce-text/js-worker" id="workies">
-		// Post data straight back to client
-		// self.addEventListener('message', function(e){
-		// 	self.postMessage(e.data);
-		// });
+	<button id="worker">Expensive operation with web worker (non-blocking)</button>
+	<p>Array size: <span id="output2"></span></p>
 
-		// Create a 1000mb array...
-		var uInt8View = new Uint8Array(1024*1024*1000); // 1000MB
-		for ( var i = 0; i < uInt8View.length; i++){
-			uInt8View[i] = i;
-		}
-
-		// and send it to the client (cloned if no 2nd argument)
-		self.postMessage(uInt8View.buffer, [uInt8View.buffer])
-	</script>
+	<textarea>Edit me to test blocking UI...</textarea>
 
 	<script>
-		// 1) Create worker from a string
-		// var blob = new Blob(["self.addEventListener('message', messageReceived); function messageReceived(e) {self.postMessage('Doing ok from this string...');}"], {type: 'text/javascript'});
-
-		// 2) Create worker using a custom script tag, above
-		var logic = document.getElementById('workies').textContent;
-		var blob = new Blob([logic], {type: 'text/javascript'});
-
-
-		// create a virtual file
-		var code = window.URL.createObjectURL(blob);
-
-		// create the worker
-		var worker = new Worker(code);
-
-		// 3) Or just put the worker in an external file:
-		// var worker = new Worker('webworker.js');
-
-
-		worker.onmessage = function(e){
-			console.log(e.data.byteLength);
+		function makeData(){
+			//Create 1000mb array, locking the UI
+			var uInt8View = new Uint8Array(1024*1024*1000); // 1000mb
+			for ( var i = 0; i < uInt8View.length; i++){
+				uInt8View[i] = i;
+			}
+			return uInt8View;
 		}
 
-		// Create a 16mb array, locking the UI
-		// var uInt8View = new Uint8Array(1024*1024*1000); // 16MB
-		// for ( var i = 0; i < uInt8View.length; i++){
-		// 	uInt8View[i] = i;
-		// }
-
-
-		// If we create the array in the web worker, the UI doesn't lock
-		document.getElementById('alert').addEventListener('click', function(){
-			alert('Yes I can!');
+		document.getElementById('expensive').addEventListener('click', function(){
+			output1.innerHTML = makeData().byteLength ;
 		});
 
-
-		/////////////
-
-		// Shared worker - TODO
-		// var sharedworker = new SharedWorker('sharedworker.js');
-		// sharedworker.port.onmessage = function(e){
-		// 	var msg = 'Someone just said: "' + e.data.message + '". That is message number: ' + e.data.counter;
-		// 	console.log(msg);
-		// }
-		// sharedworker.port.postMessage('Hello shared worker!');
+		// If we create the array in the web worker, the UI doesn't lock
+		document.getElementById('worker').addEventListener('click', function(){
+			var worker = new Worker('./js/webworker.js');
+			worker.onmessage = function(e){
+				output2.innerHTML = e.data.byteLength;
+			}
+		});
 	</script>
 
 </body>
