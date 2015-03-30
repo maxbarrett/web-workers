@@ -34,14 +34,16 @@
 		}
 
 		document.getElementById('expensive').addEventListener('click', function(){
-			output1.innerHTML = makeData().byteLength ;
+			var start = new Date();
+			output1.innerHTML = makeData().byteLength + ', taking ' + (new Date() - start) / 1000 + ' seconds.';
 		});
 
 		// If we create the array in the web worker, the UI doesn't lock
 		document.getElementById('worker').addEventListener('click', function(){
 			var worker = new Worker('./js/webworker.js');
+			var start = new Date();
 			worker.onmessage = function(e){
-				output2.innerHTML = e.data.byteLength;
+				output2.innerHTML = e.data.byteLength + ', taking ' + (new Date() - start) / 1000 + ' seconds.';
 			}
 		});
 	</script>
