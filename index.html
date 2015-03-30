@@ -12,14 +12,14 @@
 
 	<h1>Web worker demo</h1>
 
-	<p>Both buttons invoke identical functions creating 1000mb array.</p>
+	<p>Both buttons invoke an identical function that creates an 1000mb array. The function for button 1 is on this page. The function for Button 2 is in an external Web Worker file.</p>
 
-	<button id="expensive">Expensive operation (blocking)</button>
-	<p>Array size: <span id="output1"></span></p>
+	<button id="expensive">Expensive func: blocking</button>
+	<p id="output1"></p>
 
 
-	<button id="worker">Expensive operation with web worker (non-blocking)</button>
-	<p>Array size: <span id="output2"></span></p>
+	<button id="worker">Same func in Web Worker: non-blocking</button>
+	<p id="output2"></p>
 
 	<textarea>Edit me to test if UI is blocked...</textarea>
 
@@ -35,7 +35,7 @@
 
 		document.getElementById('expensive').addEventListener('click', function(){
 			var start = new Date();
-			output1.innerHTML = makeData().byteLength + ', taking ' + (new Date() - start) / 1000 + ' seconds.';
+			output1.innerHTML = 'That took ' + (new Date() - start) / 1000 + ' seconds.';
 		});
 
 		// If we create the array in the web worker, the UI doesn't lock
@@ -43,7 +43,7 @@
 			var worker = new Worker('./js/webworker.js');
 			var start = new Date();
 			worker.onmessage = function(e){
-				output2.innerHTML = e.data.byteLength + ', taking ' + (new Date() - start) / 1000 + ' seconds.';
+				output2.innerHTML = 'That took ' + (new Date() - start) / 1000 + ' seconds.';
 			}
 		});
 	</script>
