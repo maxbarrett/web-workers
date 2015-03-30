@@ -13,7 +13,7 @@
 	<h1>Web worker demo</h1>
 
 	<p>Both buttons invoke an identical function that creates an 1000mb array. </p>
-	<p>The function for button 1 is on this page. </p>
+	<p>The function for Button 1 is on this page. </p>
 	<p>The function for Button 2 is in an external Web Worker file.</p>
 
 	<button id="expensive">Expensive func: blocking</button>
@@ -37,6 +37,7 @@
 
 		document.getElementById('expensive').addEventListener('click', function(){
 			var start = new Date();
+			makeData();
 			output1.innerHTML = 'That took ' + (new Date() - start) / 1000 + ' seconds.';
 		});
 
